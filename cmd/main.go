@@ -2,7 +2,6 @@ package main
 
 import (
 	"gokeeper/internal/kdb"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -143,13 +142,19 @@ func main() {
 			return
 		}
 		passwordDetails.Show()
+		//log.Println(item.Entry)
+		// TODO: Process all Entry fields dinaicaly
 		for _, v := range passwordDetails.Items {
 			if v.Text == "Title" {
 				v.Widget.(*widget.Label).SetText(item.Entry.GetTitle())
 			} else if v.Text == "Password" {
 				v.Widget.(*widget.Entry).SetText(item.Entry.GetTitle())
 			} else if v.Text == "URL" {
-				log.Println(item.Entry.Values)
+				v.Widget.(*widget.Label).SetText(item.Entry.GetContent("URL"))
+			} else if v.Text == "UserName" {
+				v.Widget.(*widget.Label).SetText(item.Entry.GetContent("UserName"))
+			} else if v.Text == "Notes" {
+				v.Widget.(*widget.Label).SetText(item.Entry.GetContent("Notes"))
 			}
 		}
 	}
@@ -157,7 +162,9 @@ func main() {
 	passwordDetails = widget.NewForm(
 		widget.NewFormItem("Title", widget.NewLabel("")),
 		widget.NewFormItem("URL", widget.NewLabel("")),
+		widget.NewFormItem("UserName", widget.NewLabel("")),
 		widget.NewFormItem("Password", widget.NewPasswordEntry()),
+		widget.NewFormItem("Notes", widget.NewLabel("")),
 	)
 	passwordDetails.Hide()
 
