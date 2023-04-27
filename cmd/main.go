@@ -106,13 +106,11 @@ func main() {
 	)
 	w.SetMainMenu(mainMenu)
 
-	/*
-		toolbar := widget.NewToolbar(
-			widget.NewToolbarAction(theme.DocumentIcon(), actionMenuOpen),
-			widget.NewToolbarSeparator(),
-			widget.NewToolbarAction(theme.HelpIcon(), actionHelpAbout),
-		)
-	*/
+	toolbar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.DocumentIcon(), actionMenuOpen),
+		widget.NewToolbarSeparator(),
+		widget.NewToolbarAction(theme.HelpIcon(), actionHelpAbout),
+	)
 
 	passwordTree = widget.NewTree(
 		func(s string) []string {
@@ -150,7 +148,8 @@ func main() {
 			} else if v.Text == "Password" {
 				v.Widget.(*widget.Entry).SetText(item.Entry.GetTitle())
 			} else if v.Text == "URL" {
-				v.Widget.(*widget.Label).SetText(item.Entry.GetContent("URL"))
+				v.Widget.(*widget.Hyperlink).SetURLFromString(item.Entry.GetContent("URL"))
+				v.Widget.(*widget.Hyperlink).SetText(item.Entry.GetContent("URL"))
 			} else if v.Text == "UserName" {
 				v.Widget.(*widget.Label).SetText(item.Entry.GetContent("UserName"))
 			} else if v.Text == "Notes" {
@@ -161,27 +160,32 @@ func main() {
 
 	passwordDetails = widget.NewForm(
 		widget.NewFormItem("Title", widget.NewLabel("")),
-		widget.NewFormItem("URL", widget.NewLabel("")),
+		widget.NewFormItem("URL", widget.NewHyperlink("", nil)),
 		widget.NewFormItem("UserName", widget.NewLabel("")),
 		widget.NewFormItem("Password", widget.NewPasswordEntry()),
 		widget.NewFormItem("Notes", widget.NewLabel("")),
 	)
 	passwordDetails.Hide()
 
-	content := container.NewGridWithColumns(
-		2,
-		passwordTree,
-		passwordDetails,
+	content := container.NewBorder(
+		toolbar,
+		nil,
+		nil,
+		nil,
+		container.NewGridWithColumns(
+			2,
+			passwordTree,
+			passwordDetails,
+		),
 	)
 
 	w.SetContent(content)
-	w.ShowAndRun()
 
-	/*
-		if len(os.Args) > 1 {
-			loadFile(os.Args[1])
-		}
-	*/
+	if len(os.Args) > 1 {
+		loadFile(os.Args[1])
+	}
+
+	w.ShowAndRun()
 
 	/*
 		content := container.NewBorder(
