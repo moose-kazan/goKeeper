@@ -2,6 +2,7 @@ package main
 
 import (
 	"gokeeper/internal/kdb"
+	"gokeeper/internal/settings"
 	"os"
 	"path/filepath"
 
@@ -48,6 +49,36 @@ func actionMenuOpen() {
 	d.Show()
 }
 
+func actionSettings() {
+	selectItem := widget.NewSelect(
+		settings.StartLoadOptions(),
+		func(s string) {
+
+		},
+	)
+	selectItem.SetSelectedIndex(settings.New(a.Preferences()).GetStartLoadOption())
+
+	dialog.NewForm(
+		"Settings",
+		"OK",
+		"Cancel",
+		[]*widget.FormItem{
+			widget.NewFormItem(
+				"Load on start",
+				selectItem,
+			),
+		},
+		func(b bool) {
+			if !b {
+				return
+			}
+			settings.New(a.Preferences()).SetStartLoadOption(selectItem.Selected)
+		},
+		w,
+	).Show()
+	return
+}
+
 func loadFile(fileName string) {
 	pwdEntry := widget.NewPasswordEntry()
 	dialog.NewForm(
@@ -82,6 +113,7 @@ func loadFile(fileName string) {
 			//log.Println(db.Content.Root.Groups[0].Groups[0].Entries[0].GetPassword())
 			//log.Println(fileName)
 			//log.Println(pwdEntry.Text)
+			settings.New(a.Preferences()).SetLastFile(fileName)
 		},
 		w,
 	).Show()
@@ -89,8 +121,8 @@ func loadFile(fileName string) {
 
 func main() {
 	os.Setenv("FYNE_THEME", "light")
-	a = app.New()
-	w = a.NewWindow("goKeeper")
+	a = app.NewWithID("goKeeperViewer")
+	w = a.NewWindow("goKeeperViewer")
 	w.Resize(fyne.NewSize(640, 480))
 
 	mainMenu := fyne.NewMainMenu(
@@ -98,6 +130,10 @@ func main() {
 			"File",
 			newMenuItem("Open", actionMenuOpen, theme.DocumentIcon(), nil),
 			newMenuItem("Quit", func() { a.Quit() }, theme.LogoutIcon(), nil),
+		),
+		fyne.NewMenu(
+			"Settings",
+			newMenuItem("Settings", actionSettings, theme.SettingsIcon(), nil),
 		),
 		fyne.NewMenu(
 			"Help",
@@ -108,6 +144,8 @@ func main() {
 
 	toolbar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.DocumentIcon(), actionMenuOpen),
+		widget.NewToolbarSeparator(),
+		widget.NewToolbarAction(theme.SettingsIcon(), actionSettings),
 		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(theme.HelpIcon(), actionHelpAbout),
 	)
@@ -183,6 +221,11 @@ func main() {
 
 	if len(os.Args) > 1 {
 		loadFile(os.Args[1])
+	} else if settings.New(a.Preferences()).GetStartLoadOption() == settings.START_LOAD_LAST {
+		var fileName = settings.New(a.Preferences()).GetLastFile()
+		if fileName != "" {
+			loadFile(fileName)
+		}
 	}
 
 	w.ShowAndRun()
