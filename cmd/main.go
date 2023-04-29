@@ -31,7 +31,18 @@ func newMenuItem(label string, action func(), Icon fyne.Resource, Shortcut fyne.
 }
 
 func actionHelpAbout() {
-	dialog.ShowInformation("About goKeeper", "Simple viewer for KDBX (KeePass) files.", w)
+	d := dialog.NewCustom(
+		"About",
+		"ok",
+		widget.NewRichTextFromMarkdown(
+			"Simple viewer for KDBX (KeePass) files.\n\n"+
+				"Author: Vadim Kalinnov ([moose@ylsoftware.com](mailto:moose@ylsoftware.com?subject=goKeeperViewer))\n\n"+
+				"More info and source code can be found at:\n\n"+
+				"[https://github.com/moose-kazan/goKeeperViewer](https://github.com/moose-kazan/goKeeperViewer)\n\n",
+		),
+		w,
+	)
+	d.Show()
 }
 
 func actionMenuOpen() {
