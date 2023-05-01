@@ -1,8 +1,8 @@
 package main
 
 import (
-	"gokeeper/internal/kdb"
-	"gokeeper/internal/settings"
+	"gokeeperViewer/internal/kdb"
+	"gokeeperViewer/internal/settings"
 	"os"
 	"path/filepath"
 
