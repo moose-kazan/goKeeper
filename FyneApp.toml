@@ -1,0 +1,8 @@
+Website = "https://github.com/moose-kazan/goKeeperViewer"
+
+[Details]
+  Icon = "Icon.png"
+  Name = "goKeeperViewer"
+  ID = "com.ylsoftware.gokeeperviewer"
+  Version = "0.0.1"
+  Build = 4

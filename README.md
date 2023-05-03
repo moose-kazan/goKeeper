@@ -7,7 +7,11 @@ Simple viewer for KDBX-files. It's support only basic features and
 don't support extended features like saved binaries.
 
 ## Build ##
-Just type: ``go build cmd/main.go``
+First install fyne:
+``go install fyne.io/fyne/v2/cmd/fyne``
+
+Then build app:
+``fyne build``
 
 ## Windows on Arm64 issues ##
 On arm64 devices with windows you need "OpenCL and OpenGL Compatibility pack":
