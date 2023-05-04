@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"gokeeperViewer/internal/kdb"
 	"gokeeperViewer/internal/settings"
+	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -31,15 +34,24 @@ func newMenuItem(label string, action func(), Icon fyne.Resource, Shortcut fyne.
 }
 
 func actionHelpAbout() {
+	urlEmailTitle := "moose@ylsoftware.com"
+	urlEmail, _ := url.Parse(fmt.Sprintf("mailto:%s", urlEmailTitle))
+	urlWSTitle := "https://github.com/moose-kazan/goKeeperViewer"
+	urlWS, _ := url.Parse("https://github.com/moose-kazan/goKeeperViewer")
+	aboutLayout := container.NewVBox(
+		widget.NewLabelWithStyle("goKeeperViewer", fyne.TextAlignCenter, fyne.TextStyle{true, false, false, false, 8}),
+		widget.NewForm(
+			widget.NewFormItem("Author", widget.NewLabel("Vadim Kalinnov")),
+			widget.NewFormItem("E-Mail", widget.NewHyperlink(urlEmailTitle, urlEmail)),
+			widget.NewFormItem("Website", widget.NewHyperlink(urlWSTitle, urlWS)),
+			widget.NewFormItem("Description", widget.NewLabel("Simple viewer for KDBX (KeePass) files.")),
+			widget.NewFormItem("OS", widget.NewLabel(fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH))),
+		),
+	)
 	d := dialog.NewCustom(
 		"About",
-		"ok",
-		widget.NewRichTextFromMarkdown(
-			"Simple viewer for KDBX (KeePass) files.\n\n"+
-				"Author: Vadim Kalinnov ([moose@ylsoftware.com](mailto:moose@ylsoftware.com?subject=goKeeperViewer))\n\n"+
-				"More info and source code can be found at:\n\n"+
-				"[https://github.com/moose-kazan/goKeeperViewer](https://github.com/moose-kazan/goKeeperViewer)\n\n",
-		),
+		"OK",
+		aboutLayout,
 		w,
 	)
 	d.Show()
