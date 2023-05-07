@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gokeeperViewer/fynefilechooser"
 	"gokeeperViewer/internal/kdb"
 	"gokeeperViewer/internal/settings"
 	"net/url"
@@ -39,7 +40,7 @@ func actionHelpAbout() {
 	urlWSTitle := "https://github.com/moose-kazan/goKeeperViewer"
 	urlWS, _ := url.Parse("https://github.com/moose-kazan/goKeeperViewer")
 	aboutLayout := container.NewVBox(
-		widget.NewLabelWithStyle("goKeeperViewer", fyne.TextAlignCenter, fyne.TextStyle{true, false, false, false, 8}),
+		widget.NewLabelWithStyle("goKeeperViewer", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		widget.NewForm(
 			widget.NewFormItem("Author", widget.NewLabel("Vadim Kalinnov")),
 			widget.NewFormItem("E-Mail", widget.NewHyperlink(urlEmailTitle, urlEmail)),
@@ -64,7 +65,7 @@ func actionMenuOpen() {
 			return
 		}
 		if u != nil {
-			loadFile(u.URI().Path())
+			loadFile(u.URI())
 		}
 
 	}, w)
@@ -102,15 +103,17 @@ func actionSettings() {
 	return
 }
 
-func loadFile(fileName string) {
+func loadFile(fileName fyne.URI) {
 	pwdEntry := widget.NewPasswordEntry()
-	dialog.NewForm(
+	keyFileChooser := fynefilechooser.NewFileChooser(w, storage.NewExtensionFileFilter([]string{".keyx", ".key"}))
+	d := dialog.NewForm(
 		"Enter password",
 		"OK",
 		"Cancel",
 		[]*widget.FormItem{
-			widget.NewFormItem("File Name", widget.NewLabel(filepath.Base(fileName))),
+			widget.NewFormItem("File Name", widget.NewLabel(filepath.Base(fileName.Path()))),
 			widget.NewFormItem("Password", pwdEntry),
+			widget.NewFormItem("Key File", keyFileChooser),
 		},
 		func(b bool) {
 			if !b {
@@ -118,7 +121,7 @@ func loadFile(fileName string) {
 			}
 
 			tmpDb := kdb.New()
-			err := tmpDb.Load(fileName, pwdEntry.Text)
+			err := tmpDb.Load(fileName, pwdEntry.Text, keyFileChooser.GetURI())
 
 			if err != nil {
 				dialog.NewError(err, w).Show()
@@ -136,10 +139,11 @@ func loadFile(fileName string) {
 			//log.Println(db.Content.Root.Groups[0].Groups[0].Entries[0].GetPassword())
 			//log.Println(fileName)
 			//log.Println(pwdEntry.Text)
-			settings.New(a.Preferences()).SetLastFile(fileName)
+			settings.New(a.Preferences()).SetLastFile(fileName.String())
 		},
 		w,
-	).Show()
+	)
+	d.Show()
 }
 
 func main() {
@@ -243,11 +247,11 @@ func main() {
 	w.SetContent(content)
 
 	if len(os.Args) > 1 {
-		loadFile(os.Args[1])
+		loadFile(storage.NewFileURI(os.Args[1]))
 	} else if settings.New(a.Preferences()).GetStartLoadOption() == settings.START_LOAD_LAST {
 		var fileName = settings.New(a.Preferences()).GetLastFile()
 		if fileName != "" {
-			loadFile(fileName)
+			loadFile(storage.NewURI(fileName))
 		}
 	}
 

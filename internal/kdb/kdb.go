@@ -1,10 +1,12 @@
 package kdb
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
+	"fyne.io/fyne/v2"
 	"github.com/tobischo/gokeepasslib/v3"
 )
 
@@ -30,11 +32,28 @@ type KDBIface interface {
 	SetDebug(d bool)
 	processTreeBranch(id string, key int, val gokeepasslib.Group) []*KDBItem
 	processTreeItem(id string, key int, val gokeepasslib.Entry) []*KDBItem
+	getCredentials(filePass string, keyFileName fyne.URI) (*gokeepasslib.DBCredentials, error)
 	logLine(s string)
 }
 
 func (k *KDB) SetDebug(d bool) {
 	k.debug = d
+}
+
+func (k *KDB) getCredentials(filePass string, keyFileName fyne.URI) (*gokeepasslib.DBCredentials, error) {
+	var rv *gokeepasslib.DBCredentials = nil
+	var err error = nil
+	if filePass != "" && keyFileName != nil {
+		rv, err = gokeepasslib.NewPasswordAndKeyCredentials(filePass, keyFileName.Path())
+	} else if filePass != "" {
+		rv = gokeepasslib.NewPasswordCredentials(filePass)
+	} else if keyFileName != nil {
+		rv, err = gokeepasslib.NewKeyCredentials(keyFileName.Path())
+	} else {
+		err = errors.New("No credentials provided!")
+	}
+
+	return rv, err
 }
 
 func (k *KDB) GetChildIDs(s string) []string {
@@ -137,15 +156,21 @@ func (k *KDB) processTreeItem(id string, key int, val gokeepasslib.Entry) []*KDB
 	return rv
 }
 
-func (k *KDB) Load(fileName string, filePass string) error {
-	file, err := os.Open(fileName)
+func (k *KDB) Load(fileName fyne.URI, filePass string, keyFileName fyne.URI) error {
+	file, err := os.Open(fileName.Path())
 	if err != nil {
 		return err
 	}
 
 	db := gokeepasslib.NewDatabase()
-	db.Credentials = gokeepasslib.NewPasswordCredentials(filePass)
+	db.Credentials, err = k.getCredentials(filePass, keyFileName)
+
+	if err != nil {
+		return err
+	}
+
 	err = gokeepasslib.NewDecoder(file).Decode(db)
+
 	if err != nil {
 		return err
 	}
