@@ -13,6 +13,14 @@ First install fyne:
 Then build app:
 ``fyne build``
 
+On windows before build you must specify environment variables like:
+
+Enable CGO:
+``CGO_ENABLE=1``
+
+Define path to your GCC-binary:
+``CC=C:\msys64\clangarm64\bin\gcc.exe``
+
 ## Windows on Arm64 issues ##
 On arm64 devices with windows you need "OpenCL and OpenGL Compatibility pack":
 
