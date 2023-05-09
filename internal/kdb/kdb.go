@@ -11,9 +11,10 @@ import (
 )
 
 type KDB struct {
-	db       *gokeepasslib.Database
-	treeData []*KDBItem
-	debug    bool
+	db           *gokeepasslib.Database
+	treeData     []*KDBItem
+	treeDataById map[string]*KDBItem
+	debug        bool
 }
 
 type KDBItem struct {
@@ -67,12 +68,7 @@ func (k *KDB) GetChildIDs(s string) []string {
 }
 
 func (k *KDB) GetItemByID(s string) *KDBItem {
-	for _, v := range k.treeData {
-		if v.Id == s {
-			return v
-		}
-	}
-	return nil
+	return k.treeDataById[s]
 }
 
 func (k *KDB) IsBranch(s string) bool {
@@ -100,16 +96,20 @@ func (k *KDB) Tree() []*KDBItem {
 		return k.treeData
 	}
 	k.treeData = make([]*KDBItem, 0)
+	k.treeDataById = make(map[string]*KDBItem)
+
 	var i KDBItem
 	i.Id = "/"
 	i.Title = "Root"
 	i.Parent = ""
 	k.logLine(fmt.Sprintf("%s - \"%s\"", i.Id, i.Title))
 	k.treeData = append(k.treeData, &i)
+	k.treeDataById[i.Id] = &i
 
 	for key, val := range k.db.Content.Root.Groups {
 		for _, v := range k.processTreeBranch(i.Id, key, val) {
 			k.treeData = append(k.treeData, v)
+			k.treeDataById[v.Id] = v
 		}
 	}
 
