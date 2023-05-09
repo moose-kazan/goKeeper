@@ -58,6 +58,7 @@ func (k *KDB) getCredentials(filePass string, keyFileName fyne.URI) (*gokeepassl
 }
 
 func (k *KDB) GetChildIDs(s string) []string {
+	k.logLine(fmt.Sprintf("GetChildIDs(%s)", s))
 	rv := make([]string, 0)
 	for _, v := range k.treeData {
 		if v.Parent == s {
@@ -68,6 +69,7 @@ func (k *KDB) GetChildIDs(s string) []string {
 }
 
 func (k *KDB) GetItemByID(s string) *KDBItem {
+	k.logLine(fmt.Sprintf("GetItemById(%s)", s))
 	return k.treeDataById[s]
 }
 
