@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"github.com/tobischo/gokeepasslib/v3"
@@ -113,11 +114,24 @@ func (k *KDB) Tree() []*KDBItem {
 		}
 	}
 
+	// Sort alphabeticlay!
 	for i := 1; i < len(k.treeData); i++ {
-		if k.treeData[i].Title < k.treeData[i-1].Title {
+		// Sort without register
+		if strings.ToUpper(k.treeData[i].Title) < strings.ToUpper(k.treeData[i-1].Title) {
 			for j := i; j > 0 && k.treeData[j].Title < k.treeData[j-1].Title; j-- {
 				k.treeData[j], k.treeData[j-1] = k.treeData[j-1], k.treeData[j]
 			}
+		}
+	}
+
+	// Only on sorted data!
+	// In other cases childs ids wil not be sorted alphabeticlay!
+	for _, v := range k.treeData {
+		if v.Id != "/" {
+			k.GetItemByID(v.Parent).ChildIds = append(
+				k.GetItemByID(v.Parent).ChildIds,
+				v.Id,
+			)
 		}
 	}
 	return k.treeData
@@ -130,7 +144,7 @@ func (k *KDB) processTreeBranch(parent *KDBItem, key int, val gokeepasslib.Group
 	i.Title = val.Name
 	i.Parent = parent.Id
 	i.ChildIds = make([]string, 0)
-	parent.ChildIds = append(parent.ChildIds, i.Id)
+	//parent.ChildIds = append(parent.ChildIds, i.Id)
 	rv = append(rv, &i)
 	k.logLine(fmt.Sprintf("%s - \"%s\"", i.Id, i.Title))
 	for key, val := range val.Groups {
@@ -153,7 +167,7 @@ func (k *KDB) processTreeItem(parent *KDBItem, key int, val gokeepasslib.Entry) 
 	i.Title = val.GetTitle()
 	i.Entry = &val
 	i.Parent = parent.Id
-	parent.ChildIds = append(parent.ChildIds, i.Id)
+	//parent.ChildIds = append(parent.ChildIds, i.Id)
 	rv = append(rv, &i)
 	k.logLine(fmt.Sprintf("%s - \"%s\"", i.Id, i.Title))
 	return rv
