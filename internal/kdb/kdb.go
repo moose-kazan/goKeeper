@@ -18,10 +18,11 @@ type KDB struct {
 }
 
 type KDBItem struct {
-	Id     string
-	Title  string
-	Parent string
-	Entry  *gokeepasslib.Entry
+	Id       string
+	Title    string
+	Parent   string
+	Entry    *gokeepasslib.Entry
+	ChildIds []string
 }
 
 type KDBIface interface {
@@ -31,8 +32,8 @@ type KDBIface interface {
 	GetItemByID(s string) *KDBItem
 	IsBranch(s string) bool
 	SetDebug(d bool)
-	processTreeBranch(id string, key int, val gokeepasslib.Group) []*KDBItem
-	processTreeItem(id string, key int, val gokeepasslib.Entry) []*KDBItem
+	processTreeBranch(parent *KDBItem, key int, val gokeepasslib.Group) []*KDBItem
+	processTreeItem(parent *KDBItem, key int, val gokeepasslib.Entry) []*KDBItem
 	getCredentials(filePass string, keyFileName fyne.URI) (*gokeepasslib.DBCredentials, error)
 	logLine(s string)
 }
@@ -59,32 +60,28 @@ func (k *KDB) getCredentials(filePass string, keyFileName fyne.URI) (*gokeepassl
 
 func (k *KDB) GetChildIDs(s string) []string {
 	k.logLine(fmt.Sprintf("GetChildIDs(%s)", s))
-	rv := make([]string, 0)
-	for _, v := range k.treeData {
-		if v.Parent == s {
-			rv = append(rv, v.Id)
-		}
+	v := k.GetItemByID(s)
+	if v == nil {
+		return make([]string, 0)
 	}
-	return rv
+	return v.ChildIds
 }
 
 func (k *KDB) GetItemByID(s string) *KDBItem {
 	k.logLine(fmt.Sprintf("GetItemById(%s)", s))
+	if k.treeDataById == nil {
+		return nil
+	}
 	return k.treeDataById[s]
 }
 
 func (k *KDB) IsBranch(s string) bool {
-	k.logLine("KDB IsBranch")
-	if k.treeData != nil {
-		k.logLine("KDB IsBranch Not Nil")
-		for _, v := range k.treeData {
-			if v.Id == s {
-				k.logLine("KDB IsBranch Found")
-				return v.Entry == nil
-			}
-		}
+	k.logLine(fmt.Sprintf("IsBranch(%s)", s))
+	v := k.GetItemByID(s)
+	if v == nil {
+		return false
 	}
-	return false
+	return v.Entry == nil
 }
 
 func (k *KDB) logLine(s string) {
@@ -104,12 +101,13 @@ func (k *KDB) Tree() []*KDBItem {
 	i.Id = "/"
 	i.Title = "Root"
 	i.Parent = ""
+	i.ChildIds = make([]string, 0)
 	k.logLine(fmt.Sprintf("%s - \"%s\"", i.Id, i.Title))
 	k.treeData = append(k.treeData, &i)
 	k.treeDataById[i.Id] = &i
 
 	for key, val := range k.db.Content.Root.Groups {
-		for _, v := range k.processTreeBranch(i.Id, key, val) {
+		for _, v := range k.processTreeBranch(&i, key, val) {
 			k.treeData = append(k.treeData, v)
 			k.treeDataById[v.Id] = v
 		}
@@ -125,34 +123,37 @@ func (k *KDB) Tree() []*KDBItem {
 	return k.treeData
 }
 
-func (k *KDB) processTreeBranch(id string, key int, val gokeepasslib.Group) []*KDBItem {
+func (k *KDB) processTreeBranch(parent *KDBItem, key int, val gokeepasslib.Group) []*KDBItem {
 	rv := make([]*KDBItem, 0)
 	var i KDBItem
-	i.Id = fmt.Sprintf("%sG%d/", id, key)
+	i.Id = fmt.Sprintf("%sG%d/", parent.Id, key)
 	i.Title = val.Name
-	i.Parent = id
+	i.Parent = parent.Id
+	i.ChildIds = make([]string, 0)
+	parent.ChildIds = append(parent.ChildIds, i.Id)
 	rv = append(rv, &i)
 	k.logLine(fmt.Sprintf("%s - \"%s\"", i.Id, i.Title))
 	for key, val := range val.Groups {
-		for _, v := range k.processTreeBranch(i.Id, key, val) {
+		for _, v := range k.processTreeBranch(&i, key, val) {
 			rv = append(rv, v)
 		}
 	}
 	for key, val := range val.Entries {
-		for _, v := range k.processTreeItem(i.Id, key, val) {
+		for _, v := range k.processTreeItem(&i, key, val) {
 			rv = append(rv, v)
 		}
 	}
 	return rv
 }
 
-func (k *KDB) processTreeItem(id string, key int, val gokeepasslib.Entry) []*KDBItem {
+func (k *KDB) processTreeItem(parent *KDBItem, key int, val gokeepasslib.Entry) []*KDBItem {
 	rv := make([]*KDBItem, 0)
 	var i KDBItem
-	i.Id = fmt.Sprintf("%sI%d/", id, key)
+	i.Id = fmt.Sprintf("%sI%d/", parent.Id, key)
 	i.Title = val.GetTitle()
 	i.Entry = &val
-	i.Parent = id
+	i.Parent = parent.Id
+	parent.ChildIds = append(parent.ChildIds, i.Id)
 	rv = append(rv, &i)
 	k.logLine(fmt.Sprintf("%s - \"%s\"", i.Id, i.Title))
 	return rv
