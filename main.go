@@ -106,7 +106,7 @@ func main() {
 			if v.Text == "Title" {
 				v.Widget.(*widget.Label).SetText(item.Entry.GetTitle())
 			} else if v.Text == "Password" {
-				v.Widget.(*widget.Entry).Password = false
+				v.Widget.(*widget.Entry).Password = true
 				v.Widget.(*widget.Entry).Refresh()
 				v.Widget.(*widget.Entry).SetText(item.Entry.GetPassword())
 			} else if v.Text == "URL" {
