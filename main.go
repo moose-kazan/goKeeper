@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gokeeperViewer/fynefilechooser"
+	"gokeeperViewer/internal/fynefilechooser"
 	"gokeeperViewer/internal/kdb"
 	"gokeeperViewer/internal/settings"
 	"os"
