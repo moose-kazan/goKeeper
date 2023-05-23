@@ -21,7 +21,7 @@ func actionHelpAbout() {
 	aboutLayout := container.NewVBox(
 		widget.NewLabelWithStyle("goKeeperViewer", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		widget.NewForm(
-			widget.NewFormItem("Author", widget.NewLabel("Vadim Kalinnov")),
+			widget.NewFormItem("Author", widget.NewLabel("Vadim Kalinnikov")),
 			widget.NewFormItem("E-Mail", widget.NewHyperlink(urlEmailTitle, urlEmail)),
 			widget.NewFormItem("Website", widget.NewHyperlink(urlWSTitle, urlWS)),
 			widget.NewFormItem("Description", widget.NewLabel("Simple viewer for KDBX (KeePass) files.")),
