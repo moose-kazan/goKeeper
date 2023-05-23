@@ -109,16 +109,20 @@ func main() {
 				v.Widget.(*widget.Label).SetText(item.Entry.GetTitle())
 			} else if v.Text == "Password" {
 				v.Widget.(*widget.Entry).Password = true
-				v.Widget.(*widget.Entry).Refresh()
 				v.Widget.(*widget.Entry).Disable()
 				v.Widget.(*widget.Entry).SetText(item.Entry.GetPassword())
+				v.Widget.(*widget.Entry).Refresh()
 			} else if v.Text == "URL" {
 				v.Widget.(*widget.Hyperlink).SetURLFromString(item.Entry.GetContent("URL"))
 				v.Widget.(*widget.Hyperlink).SetText(item.Entry.GetContent("URL"))
 			} else if v.Text == "UserName" {
-				v.Widget.(*widget.Label).SetText(item.Entry.GetContent("UserName"))
+				v.Widget.(*widget.Entry).SetText(item.Entry.GetContent("UserName"))
+				v.Widget.(*widget.Entry).Disable()
 			} else if v.Text == "Notes" {
-				v.Widget.(*widget.Label).SetText(item.Entry.GetContent("Notes"))
+				v.Widget.(*widget.Entry).SetText(item.Entry.GetContent("Notes"))
+				v.Widget.(*widget.Entry).Disable()
+				v.Widget.(*widget.Entry).MultiLine = true
+				v.Widget.(*widget.Entry).Refresh()
 			}
 		}
 	}
@@ -126,9 +130,9 @@ func main() {
 	passwordDetails = widget.NewForm(
 		widget.NewFormItem("Title", widget.NewLabel("")),
 		widget.NewFormItem("URL", widget.NewHyperlink("", nil)),
-		widget.NewFormItem("UserName", widget.NewLabel("")),
+		widget.NewFormItem("UserName", widget.NewEntry()),
 		widget.NewFormItem("Password", widget.NewPasswordEntry()),
-		widget.NewFormItem("Notes", widget.NewLabel("")),
+		widget.NewFormItem("Notes", widget.NewEntry()),
 	)
 	passwordDetails.Hide()
 
