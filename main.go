@@ -63,6 +63,26 @@ func loadFile(fileName fyne.URI) {
 	d.Show()
 }
 
+func buildPasswordDetails() *widget.Form {
+	formUserName := widget.NewEntry()
+	formUserName.Disable()
+	formNotes := widget.NewEntry()
+	formNotes.Disable()
+	formNotes.MultiLine = true
+	formPassword := widget.NewPasswordEntry()
+	formPassword.Password = true
+	formPassword.Disable()
+
+	passwordDetails = widget.NewForm(
+		widget.NewFormItem("Title", widget.NewLabel("")),
+		widget.NewFormItem("URL", widget.NewHyperlink("", nil)),
+		widget.NewFormItem("UserName", formUserName),
+		widget.NewFormItem("Password", formPassword),
+		widget.NewFormItem("Notes", formNotes),
+	)
+	return passwordDetails
+}
+
 func main() {
 	os.Setenv("FYNE_THEME", "light")
 	a = app.NewWithID("goKeeperViewer")
@@ -108,32 +128,19 @@ func main() {
 			if v.Text == "Title" {
 				v.Widget.(*widget.Label).SetText(item.Entry.GetTitle())
 			} else if v.Text == "Password" {
-				v.Widget.(*widget.Entry).Password = true
-				v.Widget.(*widget.Entry).Disable()
 				v.Widget.(*widget.Entry).SetText(item.Entry.GetPassword())
-				v.Widget.(*widget.Entry).Refresh()
 			} else if v.Text == "URL" {
 				v.Widget.(*widget.Hyperlink).SetURLFromString(item.Entry.GetContent("URL"))
 				v.Widget.(*widget.Hyperlink).SetText(item.Entry.GetContent("URL"))
 			} else if v.Text == "UserName" {
 				v.Widget.(*widget.Entry).SetText(item.Entry.GetContent("UserName"))
-				v.Widget.(*widget.Entry).Disable()
 			} else if v.Text == "Notes" {
 				v.Widget.(*widget.Entry).SetText(item.Entry.GetContent("Notes"))
-				v.Widget.(*widget.Entry).Disable()
-				v.Widget.(*widget.Entry).MultiLine = true
-				v.Widget.(*widget.Entry).Refresh()
 			}
 		}
 	}
 
-	passwordDetails = widget.NewForm(
-		widget.NewFormItem("Title", widget.NewLabel("")),
-		widget.NewFormItem("URL", widget.NewHyperlink("", nil)),
-		widget.NewFormItem("UserName", widget.NewEntry()),
-		widget.NewFormItem("Password", widget.NewPasswordEntry()),
-		widget.NewFormItem("Notes", widget.NewEntry()),
-	)
+	passwordDetails = buildPasswordDetails()
 	passwordDetails.Hide()
 
 	content := container.NewBorder(
