@@ -2,6 +2,7 @@ package main
 
 import (
 	"gokeeperViewer/internal/fynefilechooser"
+	"gokeeperViewer/internal/fynetheme"
 	"gokeeperViewer/internal/kdb"
 	"gokeeperViewer/internal/settings"
 	"os"
@@ -65,6 +66,7 @@ func loadFile(fileName fyne.URI) {
 func main() {
 	os.Setenv("FYNE_THEME", "light")
 	a = app.NewWithID("goKeeperViewer")
+	a.Settings().SetTheme(fynetheme.New())
 	w = a.NewWindow("goKeeperViewer")
 	w.Resize(fyne.NewSize(640, 480))
 
@@ -108,6 +110,7 @@ func main() {
 			} else if v.Text == "Password" {
 				v.Widget.(*widget.Entry).Password = true
 				v.Widget.(*widget.Entry).Refresh()
+				v.Widget.(*widget.Entry).Disable()
 				v.Widget.(*widget.Entry).SetText(item.Entry.GetPassword())
 			} else if v.Text == "URL" {
 				v.Widget.(*widget.Hyperlink).SetURLFromString(item.Entry.GetContent("URL"))
