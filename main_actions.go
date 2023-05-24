@@ -53,13 +53,16 @@ func actionMenuOpen() {
 }
 
 func actionSettings() {
-	selectItem := widget.NewSelect(
+	loadOnStart := widget.NewRadioGroup(
 		settings.StartLoadOptions(),
 		func(s string) {
 
 		},
 	)
-	selectItem.SetSelectedIndex(settings.New(a.Preferences()).GetStartLoadOption())
+	loadOnStart.Selected = loadOnStart.Options[settings.New(a.Preferences()).GetStartLoadOption()]
+
+	confirmExit := widget.NewCheck("", func(b bool) {})
+	confirmExit.SetChecked(settings.New(a.Preferences()).GetConfirmExit())
 
 	dialog.NewForm(
 		"Settings",
@@ -68,16 +71,39 @@ func actionSettings() {
 		[]*widget.FormItem{
 			widget.NewFormItem(
 				"Load on start",
-				selectItem,
+				loadOnStart,
+			),
+			widget.NewFormItem(
+				"Confirm exit",
+				confirmExit,
 			),
 		},
 		func(b bool) {
 			if !b {
 				return
 			}
-			settings.New(a.Preferences()).SetStartLoadOption(selectItem.Selected)
+			s := settings.New(a.Preferences())
+			s.SetStartLoadOption(loadOnStart.Selected)
+			s.SetConfirmExit(confirmExit.Checked)
 		},
 		w,
 	).Show()
 	return
+}
+
+func actionWindowClose() {
+	if settings.New(a.Preferences()).GetConfirmExit() {
+		dialog.NewConfirm(
+			"Confirm",
+			"Are you want to close app?",
+			func(b bool) {
+				if b {
+					w.Close()
+				}
+			},
+			w,
+		).Show()
+	} else {
+		a.Quit()
+	}
 }

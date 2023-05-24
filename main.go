@@ -89,6 +89,7 @@ func main() {
 	a.Settings().SetTheme(fynetheme.New())
 	w = a.NewWindow("goKeeperViewer")
 	w.Resize(fyne.NewSize(640, 480))
+	w.SetCloseIntercept(actionWindowClose)
 
 	w.SetMainMenu(BuildMenu())
 

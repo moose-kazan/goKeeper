@@ -23,6 +23,8 @@ type goKeeperSettingsIface interface {
 	SetLastFile(fileName string) *goKeeperSettings
 	GetStartLoadOption() int
 	SetStartLoadOption(s string) *goKeeperSettings
+	GetConfirmExit() bool
+	SetConfirmExit(val bool)
 }
 
 func StartLoadOptions() []string {
@@ -56,4 +58,12 @@ func (p *goKeeperSettings) SetStartLoadOption(s string) *goKeeperSettings {
 		}
 	}
 	return p
+}
+
+func (p *goKeeperSettings) GetConfirmExit() bool {
+	return p.pref.BoolWithFallback("confirmExit", false)
+}
+
+func (p *goKeeperSettings) SetConfirmExit(val bool) {
+	p.pref.SetBool("confirmExit", val)
 }

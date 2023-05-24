@@ -17,7 +17,7 @@ func BuildMenu() *fyne.MainMenu {
 		fyne.NewMenu(
 			"File",
 			newMenuItem("Open", actionMenuOpen, theme.DocumentIcon(), nil),
-			newMenuItem("Quit", func() { a.Quit() }, theme.LogoutIcon(), nil),
+			newMenuItem("Quit", actionWindowClose, theme.LogoutIcon(), nil),
 		),
 		fyne.NewMenu(
 			"Settings",
