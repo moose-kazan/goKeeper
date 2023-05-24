@@ -14,12 +14,17 @@ import (
 )
 
 func actionHelpAbout() {
+	dialogTitle := fmt.Sprintf(
+		"%s %s",
+		a.Metadata().Name,
+		a.Metadata().Version,
+	)
 	urlEmailTitle := "moose@ylsoftware.com"
 	urlEmail, _ := url.Parse(fmt.Sprintf("mailto:%s", urlEmailTitle))
 	urlWSTitle := "https://github.com/moose-kazan/goKeeperViewer"
 	urlWS, _ := url.Parse("https://github.com/moose-kazan/goKeeperViewer")
 	aboutLayout := container.NewVBox(
-		widget.NewLabelWithStyle("goKeeperViewer", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle(dialogTitle, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		widget.NewForm(
 			widget.NewFormItem("Author", widget.NewLabel("Vadim Kalinnikov")),
 			widget.NewFormItem("E-Mail", widget.NewHyperlink(urlEmailTitle, urlEmail)),
