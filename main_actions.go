@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gokeeperViewer/internal/settings"
+	"goKeeperViewer/internal/settings"
 	"net/url"
 	"runtime"
 

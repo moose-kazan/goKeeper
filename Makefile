@@ -4,13 +4,10 @@ PREFIX ?= /usr
 
 GOPATH=$(shell go env GOPATH)
 
-deps:
-	go install fyne.io/fyne/v2/cmd/fyne@latest
-
 all: binary
 
-binary: deps
-	$(GOPATH)/bin/fyne build -o goKeeperViewer
+binary:
+	go build -o goKeeperViewer
 
 install: all
 	#$(GOPATH)/bin/fyne install

@@ -1,4 +1,4 @@
-module gokeeperViewer
+module goKeeperViewer
 
 go 1.18
 
