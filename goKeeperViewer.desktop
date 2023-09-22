@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=goKeeperViewer
+Exec=gokeeperViewer %f
+Icon=goKeeperViewer
+Categories=Office;Viewer;Database
+GenericName=Simple KDBX viewer
+GenericName[ru]=Просмотрщик файлов KDBX
+Comment=Simple viwer for KDBX (keepass) password files
+Comment[ru]=Простой просмотрщик для хранилищ паролей в формате KDBX (keepass)
