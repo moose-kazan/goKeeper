@@ -8,7 +8,7 @@ don't support extended features like saved binaries.
 
 ## Build ##
 First install fyne:
-``go install fyne.io/fyne/v2/cmd/fyne``
+``go install fyne.io/fyne/v2/cmd/fyne@latest``
 
 Then build app:
 ``fyne build``

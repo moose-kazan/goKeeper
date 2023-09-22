@@ -1,0 +1,15 @@
+Source: gokeeperviewer
+Section: text
+Priority: optional
+Maintainer: Vadim Kalinnikov <moose@ylsoftware.com>
+Build-Depends: debhelper (>= 7), golang-any, libglfw3-dev, libxcursor-dev, libxinerama-dev, libxi-dev, libxxf86vm-dev
+Standards-Version: 4.5.0
+Homepage: https://github.com/moose-kazan/goKeeperViewer
+Vcs-Git: https://github.com/moose-kazan/goKeeperViewer.git
+Vcs-Browser: https://github.com/moose-kazan/goKeeperViewer.git
+
+Package: gokeeperviewer
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Simple reeader for kdbx (keepass) files.
+
